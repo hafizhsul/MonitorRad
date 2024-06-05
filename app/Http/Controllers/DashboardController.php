@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SensorData;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use DateTime;
 use Illuminate\Support\Facades\Response;
 
 class DashboardController extends Controller
@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         $waktu = Carbon::now()->setTimezone('Asia/Jakarta')->format('d-m-Y');
-        $data = SensorData::all(['cpm', 'waktu']);        
+        $data = SensorData::all(['cpm', 'waktu']);
 
         return view('Dashboard.index', compact('data','waktu'));
     }
@@ -64,7 +64,9 @@ class DashboardController extends Controller
 
     public function status()
     {
-        return view('Dashboard.status');
+        $data = SensorData::where('cpm', '>=', 10)->get();
+
+        return view('Dashboard.status', compact('data'));
     }
 
     public function settings()
@@ -72,43 +74,20 @@ class DashboardController extends Controller
         return view('Dashboard.settings');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function deviceStatus() 
     {
-        //
-    }
+        $offlineStatus = Carbon::now()->setTimezone('Asia/Jakarta')->subMinutes(2);
+        $latestData = SensorData::orderBy('waktu', 'desc')->first();
+        $dateString = $latestData->waktu;
+        $dateTime = new DateTime($dateString);
+        $lastOnline = $dateTime->format('d-m-Y');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        if ($latestData && $latestData->waktu > $offlineStatus) {
+            $status = 'Online';
+        } else {
+            $status = 'Offline';
+        }        
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['status' => $status, 'lastOnline' => $lastOnline]);
     }
 }

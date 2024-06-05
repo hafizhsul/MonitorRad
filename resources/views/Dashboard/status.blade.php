@@ -12,23 +12,25 @@
                         <table id="example" class="display" style="min-width: 845px">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
-                                    <th>Age</th>
-                                    <th>Start date</th>
-                                    <th>Salary</th>
+                                    <th>No</th>
+                                    <th>Waktu</th>
+                                    <th>CPM</th>
+                                    <th>Suhu</th>
+                                    <th>Kelembaban</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Tiger Nixon</td>
-                                    <td>System Architect</td>
-                                    <td>Edinburgh</td>
-                                    <td>61</td>
-                                    <td>2011/04/25</td>
-                                    <td>$320,800</td>
-                                </tr>
+                                @foreach ($data as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->waktu }}</td>
+                                        <td>{{ $item->cpm }}</td>
+                                        <td>{{ $item->temp }}</td>
+                                        <td>{{ $item->humidity }}</td>
+                                        <td><span class="btn btn-danger">Tinggi</span></td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

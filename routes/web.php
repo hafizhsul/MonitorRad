@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FirebaseController;
-use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,4 +25,6 @@ Route::get('/chart/latestData', [DashboardController::class, 'latestData']);
 
 Route::get('/status', [DashboardController::class, 'status'])->name('dashboard-status');
 Route::get('/settings', [DashboardController::class, 'settings'])->name('dashboard-settings');
+Route::get('/settings/device/status', [DashboardController::class, 'deviceStatus'])->name('device-status');
 
+Route::get('/send-whatsapp', [NotificationController::class, 'sendNotification']);
