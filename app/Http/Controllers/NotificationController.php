@@ -2,32 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Twilio\Rest\Client;
+use Illuminate\Http\Request;
+use GuzzleHttp\Client;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 
 class NotificationController extends Controller
 {
     public function sendNotification()
     {
-        $twilioSid = 'AC8e7cb2bf130940dc159ade4bbf03aafc';
-        $twilioToken = '487919387ac381a9e4329c395105aa5f';
-        $twilioWhatsAppNumber = 'whatsapp:+14155238886';
-        $recipientNumber = 'whatsapp:+6282235769474';
-        $message = "*Peringatan*. Tingkat radiasi di sekitar tinggi !!";
+        $message = 'Peringatan, level radiasi tinggi!!';
+        $chatId = '1152076122';
+        $botToken = '7281018577:AAEjj1uh5jsuqKpRDvlc-EgqzxJPFKxrMhw';
 
-        $twilio = new Client($twilioSid, $twilioToken);
+        $client = new Client();
+        $response = $client->post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+            'form_params' => [
+                'chat_id' => $chatId,
+                'text' => $message,
+            ]
+        ]);
 
-        try {
-            $twilio->messages->create(
-                $recipientNumber,
-                [
-                    "from" => $twilioWhatsAppNumber,
-                    "body" => $message,
-                ]
-            );
-
-            return response()->json(['message' => 'WhatsApp message sent successfully']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $response->getBody();
     }
 }

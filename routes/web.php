@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,16 +16,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth']);
 
-Route::get('/chart/data', [DashboardController::class, 'chartData']);
+Route::get('/chart/data', [DashboardController::class, 'chartData'])->middleware(['auth']);
+Route::get('/chart/sensor', [DashboardController::class, 'conditionData'])->middleware(['auth']);
+Route::get('/chart/latestData', [DashboardController::class, 'latestData'])->middleware(['auth']);
 
-Route::get('/chart/sensor', [DashboardController::class, 'conditionData']);
+Route::get('/status', [DashboardController::class, 'status'])->name('dashboard-status')->middleware(['auth']);
+Route::get('/settings', [DashboardController::class, 'settings'])->name('dashboard-settings')->middleware(['auth']);
+Route::get('/settings/device/status', [DashboardController::class, 'deviceStatus'])->name('device-status')->middleware(['auth']);
 
-Route::get('/chart/latestData', [DashboardController::class, 'latestData']);
+Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 
-Route::get('/status', [DashboardController::class, 'status'])->name('dashboard-status');
-Route::get('/settings', [DashboardController::class, 'settings'])->name('dashboard-settings');
-Route::get('/settings/device/status', [DashboardController::class, 'deviceStatus'])->name('device-status');
-
-Route::get('/send-whatsapp', [NotificationController::class, 'sendNotification']);
+Route::get('/login', [LoginController::class, 'showLogin']);
+Route::get('/auth/{provider}/redirect', [LoginController::class, 'redirect']);
+Route::get('/auth/{provider}/callback', [LoginController::class, 'callback']);
