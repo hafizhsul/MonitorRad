@@ -1,13 +1,14 @@
 @extends('Partials.main')
 
 @section('content')
-    <div class="alert alert-warning solid alert-right-icon alert-dismissible fade show">
+    <div id="alert-container"></div>
+    {{-- <div class="alert alert-warning solid alert-right-icon alert-dismissible fade show">
         <span><i class="mdi mdi-alert"></i></span>
         <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i
                     class="mdi mdi-close"></i></span>
         </button>
         <strong>Peringatan!</strong> Tingkat radiasi tinggi di sekitar.
-    </div>
+    </div> --}}
     <div class="row">
         <div class="col-lg-3 col-sm-12">
             <div class="card">

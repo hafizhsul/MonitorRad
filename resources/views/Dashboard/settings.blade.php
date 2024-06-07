@@ -17,7 +17,7 @@
                 <div class="stat-widget-two card-body">
                     <div class="stat-content">
                         <div class="stat-text">Terakhir Online</div>
-                        <div id="device-online" class="stat-digit"></div>
+                        <div id="device-online" class="stat-digit">Loading...</div>
                     </div>
                 </div>
             </div>
