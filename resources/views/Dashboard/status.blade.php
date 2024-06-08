@@ -1,6 +1,8 @@
 @extends('Partials.main')
 
 @section('content')
+    <div id="alert-container"></div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -14,6 +16,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Waktu</th>
+                                    <th>Tanggal</th>
                                     <th>CPM</th>
                                     <th>Suhu</th>
                                     <th>Kelembaban</th>
@@ -24,7 +27,8 @@
                                 @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->waktu }}</td>
+                                        <td>{{ $item->waktu_new }}</td>
+                                        <td>{{ $item->tanggal_new }}</td>
                                         <td>{{ $item->cpm }}</td>
                                         <td>{{ $item->temp }}</td>
                                         <td>{{ $item->humidity }}</td>
@@ -38,4 +42,6 @@
             </div>
         </div>
     </div>
+
+    <script src="{{ asset('js/alert.js') }}"></script>
 @endsection

@@ -11,9 +11,12 @@ class LoginController extends Controller
 {
     public function showLogin()
     {
+        if (Auth::check()) {
+            return redirect('/');
+        }
         return view('Auth.login');
     }
-    
+
     public function redirect($provider)
     {
         return Socialite::driver($provider)->redirect();
@@ -22,17 +25,29 @@ class LoginController extends Controller
     public function callback($provider)
     {
         $googleUser = Socialite::driver($provider)->user();
-        $user = User::updateOrCreate([
-            'provider_id' => $googleUser->id,
-            'provider' => $provider
-        ], [
-            'name' => $googleUser->name,
-            'email' => $googleUser->email,
-            'provider_token' => $googleUser->token,
-        ]);
+        $existingUser = User::where('email', $googleUser->getEmail())->first();
 
-        Auth::login($user);
+        if ($existingUser) {
+            Auth::login($existingUser);
+        } else {
+            $newUser = User::updateOrCreate([
+                'provider_id' => $googleUser->id,
+                'provider' => $provider
+            ], [
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'provider_token' => $googleUser->token,
+            ]);
+
+            Auth::login($newUser);
+        }
 
         return redirect('/');
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
     }
 }
