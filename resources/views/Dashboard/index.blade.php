@@ -62,7 +62,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Sensor Update ({{ $waktu }})</h4>
+                    <h4 class="card-title">Sensor Update ({{ $lastOnline }})</h4>
                 </div>
                 <div class="card-body">
                     <canvas id="intervalChart"></canvas>
@@ -75,7 +75,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Average Condition ({{ $waktu }})</h4>
+                    <h4 class="card-title">Average Condition ({{ $lastOnline }})</h4>
                 </div>
                 <div class="card-body">
                     <canvas id="myChart"></canvas>

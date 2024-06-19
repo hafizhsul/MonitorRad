@@ -16,12 +16,10 @@ $(document).ready(function () {
                                 <strong>Peringatan!</strong> Tingkat radiasi tinggi di sekitar.
                             </div>
                         `);
-                } else {
-                    $("#alert-container").html("");
                 }
             },
         });
     }
 
-    setInterval(checkCpm, 1000);
+    setInterval(checkCpm, 500);
 });

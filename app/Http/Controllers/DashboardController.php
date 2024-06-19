@@ -15,10 +15,14 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $waktu = Carbon::now()->setTimezone('Asia/Jakarta')->format('d-m-Y');
         $data = SensorData::all(['cpm', 'waktu']);
+        $latestData = SensorData::orderBy('waktu', 'desc')->first();
 
-        return view('Dashboard.index', compact('data', 'waktu'));
+        $dateString = $latestData->waktu;
+        $dateTime = new DateTime($dateString);
+        $lastOnline = $dateTime->format('d-m-Y');
+
+        return view('Dashboard.index', compact('data', 'lastOnline'));
     }
 
     public function latestData()
@@ -57,28 +61,39 @@ class DashboardController extends Controller
 
         if ($latestSensorData) {
             $latestDateTime = Carbon::parse($latestSensorData->waktu);
-            $oneMinuteAgo = $latestDateTime->subMinutes(10);
+            $lastHours = $latestDateTime->copy()->subHours(12);
 
-            $sensors = SensorData::where('waktu', '>=', $oneMinuteAgo)
+            $sensors = SensorData::where('waktu', '>=', $lastHours)
                 ->orderBy('waktu', 'asc')
                 ->get();
 
-            $groupedData = $sensors->map(function ($item) {
-                return [
-                    'waktu' => Carbon::parse($item->waktu)->format('H:i'),
-                    'cpm' => $item->cpm,
-                    'temp' => $item->temp
+            $groupedData = [];
+
+            for ($i = 0; $i < 12; $i++) {
+                $hour = $lastHours->copy()->addHours($i)->format('Y-m-d H:00:00');
+                $groupedData[$hour] = [
+                    'waktu' => $lastHours->copy()->addHours($i)->format('H:00'),
+                    'average_cpm' => 0,
+                    'average_temperature' => 0
                 ];
-            })->groupBy('waktu')->map(function ($group) {
-                return [
-                    'waktu' => $group->first()['waktu'],
+            }
+
+            $sensorsGrouped = $sensors->groupBy(function ($item) {
+                return Carbon::parse($item->waktu)->format('Y-m-d H:00:00');
+            });
+
+            foreach ($sensorsGrouped as $hour => $group) {
+                $groupedData[$hour] = [
+                    'waktu' => Carbon::parse($hour)->format('H:00'),
                     'average_cpm' => $group->avg('cpm'),
                     'average_temperature' => $group->avg('temp')
                 ];
-            });
+            }
 
-            return response()->json($groupedData->values());
+            return response()->json(array_values($groupedData));
         }
+
+        return response()->json([]);
     }
 
     public function status()

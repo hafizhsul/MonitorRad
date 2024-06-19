@@ -239,34 +239,6 @@ function chart2() {
     setInterval(fetchAvgCondition, 60000);
 }
 
-function fetchLatestData() {
-    function fetchData() {
-        $.ajax({
-            url: "/chart/latestData",
-            method: "GET",
-            success: function (data) {
-                $("#latestCpm").text(data.cpm + " CPM");
-
-                var radiationLevel = "";
-                if (data.cpm <= 5) {
-                    radiationLevel = "Rendah";
-                } else if (data.cpm >= 10) {
-                    radiationLevel = "Tinggi";
-                } else {
-                    radiationLevel = "Sedang";
-                }
-
-                $("#radiationLevel").text(radiationLevel);
-                $("#latestTemp").text(data.temp + " °C");
-                $("#latestHumidity").text(data.humidity + " %");
-            },
-        });
-    }
-
-    fetchData();
-    setInterval(fetchData, 500);
-}
-
 function latestData() {
     function fetchData() {
         $.ajax({
@@ -292,7 +264,6 @@ function latestData() {
     }
 
     fetchData();
-
     setInterval(fetchData, 500);
 }
 
