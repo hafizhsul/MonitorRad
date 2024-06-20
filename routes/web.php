@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/chart/data', [DashboardController::class, 'chartData'])->middleware('auth');
 Route::get('/chart/sensor', [DashboardController::class, 'conditionData'])->middleware('auth');

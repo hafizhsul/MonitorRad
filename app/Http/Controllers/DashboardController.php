@@ -28,8 +28,8 @@ class DashboardController extends Controller
     public function latestData()
     {
         $data = SensorData::orderBy('waktu', 'desc')->first();
-        if ($data && $data->cpm >= 8) {
-            $this->sendNotification();
+        if ($data && $data->cpm >= 30) {
+            $this->sendNotification($data);
 
             return response()->json([
                 'cpm' => $data->cpm,
@@ -131,9 +131,24 @@ class DashboardController extends Controller
         return response()->json(['status' => $status, 'lastOnline' => $lastOnline]);
     }
 
-    public function sendNotification()
+    public function sendNotification($data)
     {
-        $message = 'Peringatan, tingkat radiasi tinggi!!';
+        $cpm = isset($data->cpm) ? $data->cpm : 'N/A';
+        $suhu = isset($data->temp) ? $data->temp : 'N/A';
+        $humidity = isset($data->humidity) ? $data->humidity : 'N/A';
+
+        $message = "⚠️ *PERINGATAN RADIASI LIMBAH B3* ⚠️
+
+‼️ Deteksi radiasi berbahaya telah teridentifikasi di area sekitar.
+
+Data Radiasi
+CPM : {$cpm}
+Suhu : {$suhu}
+Kelembaban : {$humidity}
+
+🛑 Mohon segera menjauh dari lokasi dan ikuti prosedur keselamatan yang berlaku. 
+📞 Hubungi petugas keamanan atau pihak berwenang untuk informasi lebih lanjut. 
+🚨 Utamakan keselamatan Anda dan orang-orang di sekitar.";
         $chatId = '1152076122';
         $botToken = '7281018577:AAEjj1uh5jsuqKpRDvlc-EgqzxJPFKxrMhw';
 
