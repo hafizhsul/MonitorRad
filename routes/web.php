@@ -16,11 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
 Route::get('/chart/data', [DashboardController::class, 'chartData'])->middleware('auth');
 Route::get('/chart/sensor', [DashboardController::class, 'conditionData'])->middleware('auth');
 Route::get('/chart/latestData', [DashboardController::class, 'latestData'])->middleware('auth');
+Route::get('/chart/filterHistory', [DashboardController::class, 'filterHistory'])->name('filterHistory')->middleware('auth');
 
 Route::get('/status', [DashboardController::class, 'status'])->name('dashboard-status')->middleware('auth');
 Route::get('/settings', [DashboardController::class, 'settings'])->name('dashboard-settings')->middleware('auth');

@@ -42,6 +42,11 @@
 <script src="{{ asset('assets/focus-2/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/focus-2/js/plugins-init/datatables.init.js') }}"></script>
 
+<script src="{{ asset('assets/focus-2/vendor/moment/moment.min.js') }}"></script>
+<!-- Daterangepicker -->
+<script src="{{ asset('assets/focus-2/vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ asset('assets/focus-2/js/plugins-init/bs-daterange-picker-init.js') }}"></script>
+
 </body>
 
 </html>

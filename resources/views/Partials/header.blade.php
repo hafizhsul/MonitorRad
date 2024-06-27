@@ -17,6 +17,9 @@
 
     <!-- Datatable -->
     <link href="{{ asset('assets/focus-2/vendor/datatables/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+
+    <!-- Daterange picker -->    
+    <link href="{{ asset('assets/focus-2/vendor/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
 </head>
 
 <body>

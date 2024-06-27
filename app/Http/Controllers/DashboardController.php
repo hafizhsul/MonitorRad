@@ -7,32 +7,67 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Response;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = SensorData::all(['cpm', 'waktu']);
+        $data = SensorData::all();
         $latestData = SensorData::orderBy('waktu', 'desc')->first();
+
+        $now = Carbon::now()->setTimezone('Asia/Jakarta');
+        $oneMinuteAgo = $now->subMinute();
+
+        $dataCpm = SensorData::where('waktu', '>=', $oneMinuteAgo)->get();
+        $cpm = $dataCpm->sum('cpm');
 
         $dateString = $latestData->waktu;
         $dateTime = new DateTime($dateString);
         $lastOnline = $dateTime->format('d-m-Y');
 
-        return view('Dashboard.index', compact('data', 'lastOnline'));
+        $query = SensorData::query();
+        if ($request->has('daterange')) {
+            $dateRange = explode(' - ', $request->daterange);
+            $startDate = Carbon::createFromFormat('m/d/Y h:i A', trim($dateRange[0]))->format('Y-m-d H:i:s');
+            $endDate = Carbon::createFromFormat('m/d/Y h:i A', trim($dateRange[1]))->format('Y-m-d H:i:s');
+            $query->whereBetween('waktu', [$startDate, $endDate]);
+        }
+
+        $historyData = $query->get()->groupBy(function ($date) {
+            return Carbon::parse($date->waktu)->format('Y-m-d H:m');
+        });
+
+        $averages = $historyData->map(function ($row) {
+            return [
+                'avg_temp' => number_format($row->avg('temp'), 1),
+                'avg_humidity' => number_format($row->avg('humidity'), 1),
+                'avg_cpm' => number_format($row->sum('cpm') / 60, 1),
+                'waktu' => Carbon::parse($row->first()->waktu)->format('d-m-Y H:00'),
+            ];
+        })->take(15);
+
+        return view('Dashboard.index', compact('data', 'lastOnline', 'averages'));
     }
 
     public function latestData()
     {
         $data = SensorData::orderBy('waktu', 'desc')->first();
-        if ($data && $data->cpm >= 30) {
+
+        $now = Carbon::now()->setTimezone('Asia/Jakarta');
+        $oneMinuteAgo = $now->subMinute();
+
+        $dataCpm = SensorData::where('waktu', '>=', $oneMinuteAgo)->get();
+        $cpm = $dataCpm->sum('cpm');
+
+        if ($data && $data->cpm >= 150) {
             $this->sendNotification($data);
 
             return response()->json([
-                'cpm' => $data->cpm,
+                'cpm' => $cpm,
                 'temp' => $data->temp,
                 'humidity' => $data->humidity,
                 'waktu' => $data->waktu,
@@ -41,7 +76,7 @@ class DashboardController extends Controller
         }
 
         return response()->json([
-            'cpm' => $data->cpm,
+            'cpm' => $cpm,
             'temp' => $data->temp,
             'humidity' => $data->humidity,
             'waktu' => $data->waktu,
@@ -85,8 +120,8 @@ class DashboardController extends Controller
             foreach ($sensorsGrouped as $hour => $group) {
                 $groupedData[$hour] = [
                     'waktu' => Carbon::parse($hour)->format('H:00'),
-                    'average_cpm' => $group->avg('cpm'),
-                    'average_temperature' => $group->avg('temp')
+                    'average_cpm' => number_format($group->sum('cpm') / 60, 1),
+                    'average_temperature' => number_format($group->avg('temp'), 1)
                 ];
             }
 
@@ -98,7 +133,7 @@ class DashboardController extends Controller
 
     public function status()
     {
-        $data = SensorData::where('cpm', '>=', 10)->get();
+        $data = SensorData::where('cpm', '>=', 150)->get();
 
         $data->transform(function ($item, $key) {
             $item->waktu_new = Carbon::parse($item->waktu)->format('H:i:s');

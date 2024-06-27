@@ -248,12 +248,12 @@ function latestData() {
                 $("#latestCpm").text(data.cpm + " CPM");
 
                 var radiationLevel = "";
-                if (data.cpm <= 10) {
+                if (data.cpm <= 50) {
                     radiationLevel = "Rendah";
-                } else if (data.cpm >= 30) {
-                    radiationLevel = "Tinggi";
-                } else {
+                } else if (data.cpm <= 150) {
                     radiationLevel = "Sedang";
+                } else {
+                    radiationLevel = "Tinggi";
                 }
 
                 $("#radiationLevel").text(radiationLevel);
